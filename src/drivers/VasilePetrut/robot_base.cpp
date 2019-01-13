@@ -93,19 +93,38 @@ newrace(int index, tCarElt* car, tSituation *s)
 static void  
 drive(int index, tCarElt* car, tSituation *s) 
 { 
-    
+	memset((void *)&car->ctrl, 0, sizeof(tCarCtrl));
+	float angle;
+	const float SC = 1.0;
+	angle = RtTrackSideTgAngleL(&(car->_trkPos)) - car->_yaw;
+	NORM_PI_PI(angle); // put the angle back in the range from -PI to PI
 
-
-
-    //car->ctrl.brakeCmd = 1.0; /* all brakes on ... */ 
-    /*  
-     * add the driving code here to modify the 
-     * car->_steerCmd 
-     * car->_accelCmd 
-     * car->_brakeCmd 
-     * car->_gearCmd 
-     * car->_clutchCmd 
-     */ 
+	angle -= SC * car->_trkPos.toMiddle / car->_trkPos.seg->width;
+	
+	car->ctrl.steer = angle / car->_steerLock;
+	car->ctrl.brakeCmd = 0.0; 
+		
+	if (curTrack->seg->type == TR_STR)
+	{
+		if (car->_gear <= 6)
+		{
+			car->ctrl.gear = car->_gear + 1;
+			car->ctrl.accelCmd = 1;
+		}
+	}
+	else if (curTrack->seg->type == TR_RGT || curTrack->seg->type == TR_LFT)
+	{
+		if (car->_gear >= 2)
+		{
+			car->ctrl.gear = car->_gear - 1;
+			car->ctrl.accelCmd = 0.3;
+		}
+		else
+		{
+			car->ctrl.gear = 1;
+			car->ctrl.accelCmd = 1;
+		}
+	} 
 }
 
 /* End of the current race */
