@@ -31,6 +31,10 @@
 #include <robottools.h>
 #include <robot.h>
 
+#include "States.h"
+#include "Operations.h"
+
+
 static tTrack	*curTrack;
 
 static void initTrack(int index, tTrack* track, void *carHandle, void **carParmHandle, tSituation *s); 
@@ -88,7 +92,8 @@ static void
 newrace(int index, tCarElt* car, tSituation *s) 
 { 
 } 
-
+States* StatesController = new States();
+Operations* operations = new Operations();
 /* Drive during race. */
 static void  
 drive(int index, tCarElt* car, tSituation *s) 

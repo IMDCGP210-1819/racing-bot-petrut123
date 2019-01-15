@@ -176,7 +176,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Operations.cpp" />
     <ClCompile Include="robot_base.cpp" />
+    <ClCompile Include="States.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="robot_base.def">
@@ -184,6 +186,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Operations.h" />
+    <ClInclude Include="States.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\libs\robottools\robottools.vcxproj">
