@@ -99,37 +99,42 @@ static void
 drive(int index, tCarElt* car, tSituation *s) 
 { 
 	memset((void *)&car->ctrl, 0, sizeof(tCarCtrl));
-	float angle;
-	const float SC = 1.0;
-	angle = RtTrackSideTgAngleL(&(car->_trkPos)) - car->_yaw;
-	NORM_PI_PI(angle); // put the angle back in the range from -PI to PI
-
-	angle -= SC * car->_trkPos.toMiddle / car->_trkPos.seg->width;
+	car->ctrl.gear = 4;
+	car->ctrl.brakeCmd = 0;
 	
-	car->ctrl.steer = angle / car->_steerLock;
-	car->ctrl.brakeCmd = 0.0; 
-		
-	if (curTrack->seg->type == TR_STR)
+	if (operations->getSpeedLimit(car->_trkPos.seg) > car->_speed_x && StatesController->currentState != States::State::Accelerate)
 	{
-		if (car->_gear <= 6)
-		{
-			car->ctrl.gear = car->_gear + 1;
-			car->ctrl.accelCmd = 1;
-		}
+		StatesController->currentState = States::State::Accelerate;
+	}/*
+	else if (condition)
+	{
+		StatesController->currentState = States::State::Break;
 	}
-	else if (curTrack->seg->type == TR_RGT || curTrack->seg->type == TR_LFT)
+	else if (condition)
 	{
-		if (car->_gear >= 2)
-		{
-			car->ctrl.gear = car->_gear - 1;
-			car->ctrl.accelCmd = 0.3;
-		}
-		else
-		{
-			car->ctrl.gear = 1;
-			car->ctrl.accelCmd = 1;
-		}
-	} 
+		StatesController->currentState = States::State::Stuck;
+	}*/
+	else
+	{
+		StatesController->currentState = States::State::Steering;
+	}
+
+	if (StatesController->currentState == States::State::Accelerate)
+	{
+		StatesController->AcceleratingState(car, operations->getSpeedLimit(car->_trkPos.seg));
+	}
+	else if (StatesController->currentState == States::State::Break)
+	{
+		StatesController->BreakingState();
+	}
+	else if (StatesController->currentState == States::State::Stuck)
+	{
+		StatesController->StuckState();
+	}
+	else
+	{
+		StatesController->SteeringState(car);
+	}
 }
 
 /* End of the current race */

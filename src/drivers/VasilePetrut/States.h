@@ -7,11 +7,18 @@ class States
 public:
 	States();
 	~States();
-	void SteeringState();
+	void SteeringState(tCarElt* car);
 	void StuckState();
 	void BreakingState();
-	void AcceleratingState();
-	enum State;
-	State currentState;
+	void AcceleratingState(tCarElt* car, float maxSpeed);
+	enum class State
+	{
+		Idle,
+		Steering,
+		Stuck,
+		Break,
+		Accelerate
+	};
+	State currentState = State::Steering;
 };
 

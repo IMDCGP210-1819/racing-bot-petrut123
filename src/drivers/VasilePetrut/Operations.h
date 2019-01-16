@@ -8,7 +8,7 @@ public:
 	Operations();
 	~Operations();
 	bool isOffTrack();
-	float getSpeedLimit();
+	float getSpeedLimit(tTrackSeg* segment);
 	bool changeGear();
 };
 
