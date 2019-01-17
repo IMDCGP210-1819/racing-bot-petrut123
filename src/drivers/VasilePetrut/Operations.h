@@ -7,8 +7,9 @@ class Operations
 public:
 	Operations();
 	~Operations();
-	bool isOffTrack();
+	bool isOffTrack(tCarElt* car);
 	float getSpeedLimit(tTrackSeg* segment);
-	bool changeGear();
+	bool Brake(tCarElt* car);
+	float calculateDistanceToEndOfSegment(tCarElt* car);
 };
 

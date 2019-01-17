@@ -94,42 +94,48 @@ newrace(int index, tCarElt* car, tSituation *s)
 } 
 States* StatesController = new States();
 Operations* operations = new Operations();
+
 /* Drive during race. */
 static void  
 drive(int index, tCarElt* car, tSituation *s) 
 { 
 	memset((void *)&car->ctrl, 0, sizeof(tCarCtrl));
-	car->ctrl.gear = 4;
-	car->ctrl.brakeCmd = 0;
-	
+	// See States.cpp
+	car->ctrl.gear = 1;
+
 	if (operations->getSpeedLimit(car->_trkPos.seg) > car->_speed_x && StatesController->currentState != States::State::Accelerate)
 	{
 		StatesController->currentState = States::State::Accelerate;
-	}/*
-	else if (condition)
-	{
-		StatesController->currentState = States::State::Break;
+		//Stop braking
+		car->ctrl.brakeCmd = 0;
 	}
-	else if (condition)
+	else if (operations->Brake(car))
+	{
+		StatesController->currentState = States::State::Brake;
+		//Stop accelerating
+		car->ctrl.accelCmd = 0;
+	}
+	else if (operations->isOffTrack(car))
 	{
 		StatesController->currentState = States::State::Stuck;
-	}*/
+	}
 	else
 	{
 		StatesController->currentState = States::State::Steering;
 	}
 
+
 	if (StatesController->currentState == States::State::Accelerate)
 	{
 		StatesController->AcceleratingState(car, operations->getSpeedLimit(car->_trkPos.seg));
 	}
-	else if (StatesController->currentState == States::State::Break)
+	else if (StatesController->currentState == States::State::Brake)
 	{
-		StatesController->BreakingState();
+		StatesController->BrakingState(car);
 	}
 	else if (StatesController->currentState == States::State::Stuck)
 	{
-		StatesController->StuckState();
+		StatesController->StuckState(car);
 	}
 	else
 	{
